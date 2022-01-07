@@ -1,7 +1,6 @@
 package com.example.sii_2021.services;
 
 import com.example.sii_2021.configuration.CredentialsSingleton;
-import com.example.sii_2021.configuration.SeleniumConfiguration;
 import com.example.sii_2021.entities.Link;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Keys;
@@ -18,8 +17,6 @@ public class ScraperService {
 
     @Autowired
     private LinkService linkService;
-
-    //private final SeleniumConfiguration seleniumConfiguration = new SeleniumConfiguration();
 
     public ChromeDriver scrapeLinks() throws InterruptedException {
 
