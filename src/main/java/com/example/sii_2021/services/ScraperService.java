@@ -16,29 +16,6 @@ public class ScraperService {
 
     @Autowired
     private LinkService linkService;
-/*
-    public ChromeDriver scrapeLinks(ChromeDriver driver) throws InterruptedException {
-
-        System.out.println("prova");
-
-        ChromeOptions options = new ChromeOptions();
-        String userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.517 Safari/537.36";
-        options.addArguments("window-size=1000,1200");
-        options.addArguments("--disable-blink-features=AutomationControlled");
-        options.setExperimentalOption("useAutomationExtension", false);
-        options.addArguments("general.useragent.override", userAgent);
-
-        ChromeDriver driver = new ChromeDriver(options);
-        driver.executeScript("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
-        log.info(driver.executeScript("return navigator.userAgent;").toString());
-
-        //mi estraggo tutti i link e li salvo nel db (1)
-        extractLinks(driver);
-
-        return driver;
-
-    }*/
-
 
     //TODO
     public ChromeDriver extractEntities(ChromeDriver driver){
@@ -49,13 +26,12 @@ public class ScraperService {
         return driver;
 
     }
-
+    
     public ChromeDriver extractLinks(ChromeDriver driver) throws InterruptedException {
 
         List<String> seeds = initializeSeeds();
         Collections.shuffle(seeds);
 
-        userLogin(driver);
         Thread.sleep(4000);
         driver.get("https://www.alltrails.com/us/arizona");
 
@@ -96,11 +72,12 @@ public class ScraperService {
             savedEntities = savedEntities + 1;
         }
 
-        log.info(savedEntities + " Found and Saved");
+        log.info(savedEntities + "Links Found and Saved");
 
     }
 
-    public void userLogin(ChromeDriver driver) throws InterruptedException {
+    public ChromeDriver userLogin(ChromeDriver driver) throws InterruptedException {
+
         driver.get("https://www.alltrails.com/login?ref=header");
         Thread.sleep(15000);
         driver.findElementByXPath("//input[@name='userEmail']").sendKeys(CredentialsSingleton.getInstance().getEmail());
@@ -108,6 +85,8 @@ public class ScraperService {
         driver.findElementByXPath("//input[@name='userPassword']").sendKeys(CredentialsSingleton.getInstance().getPassword());
         Thread.sleep(2000);
         driver.findElementByXPath("//input[@value='Log in']").sendKeys(Keys.ENTER);
+
+        return driver;
     }
 
     public List<String> initializeSeeds(){

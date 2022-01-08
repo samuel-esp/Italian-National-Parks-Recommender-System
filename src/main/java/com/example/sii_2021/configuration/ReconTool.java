@@ -29,6 +29,7 @@ public class ReconTool implements CommandLineRunner {
         driver.executeScript("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
         log.info(driver.executeScript("return navigator.userAgent;").toString());
 
+        driver = scraperService.userLogin(driver);
         driver = scraperService.extractLinks(driver);
         driver = scraperService.extractEntities(driver);
     }
