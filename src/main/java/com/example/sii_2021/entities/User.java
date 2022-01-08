@@ -14,7 +14,7 @@ import java.util.Set;
 @Entity
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
-@ToString @Builder
+@ToString @Builder @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "users")
 public class User {
 
@@ -25,9 +25,11 @@ public class User {
 
     private String name;
 
+    @EqualsAndHashCode.Include
     private String userLink;
 
-    @OneToMany(mappedBy="user")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy="user")
+    @ToString.Exclude
     private Set<Rating> ratingsSet;
 
     public User(String userName, String userLink, HashSet<Rating> es) {
@@ -35,4 +37,6 @@ public class User {
         this.userLink = userLink;
         this.ratingsSet = es;
     }
+
+
 }

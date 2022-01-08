@@ -27,6 +27,9 @@ public class ScraperService {
     @Autowired
     private TrailService trailService;
 
+    @Autowired
+    private RatingService ratingService;
+
     //TODO
     public ChromeDriver extractEntitiesAndReviews(ChromeDriver driver) throws InterruptedException {
 
@@ -110,16 +113,31 @@ public class ScraperService {
             //extract trail info + route type
             try {
                 List<WebElement> stats = driver.findElementsByXPath("//span[@class='styles-module__detailData___fxmwv']");
-                String lengthKmString = stats.get(0).getText();
+                String lengthKmString;
+                String elevationMString;
+                try {
+                    lengthKmString = stats.get(0).getText();
+                }catch (IndexOutOfBoundsException e){
+                    lengthKmString = "0";
+                }
                 lengthKm = Double.parseDouble(lengthKmString.replaceAll("\\D+", ""));
-                String elevationMString = stats.get(1).getText();
+                try {
+                    elevationMString = stats.get(1).getText();
+                }catch (IndexOutOfBoundsException e){
+                    elevationMString = "0";
+                }
                 elevationM = Double.parseDouble(elevationMString.replaceAll("\\D+", ""));
-                if(stats.get(2).getText().equals("Out & back")){
+                try {
+                    if (stats.get(2).getText().equals("Out & back")) {
                         outAndBack = 1;
-                }if(stats.get(2).getText().equals("Point to point")){
+                    }
+                    if (stats.get(2).getText().equals("Point to point")) {
                         pointToPoint = 1;
-                }else{
+                    } else {
                         loop = 1;
+                    }
+                }catch (IndexOutOfBoundsException e){
+                    pointToPoint = 1;
                 }
             } catch (org.openqa.selenium.NoSuchElementException e) {
 
@@ -285,8 +303,12 @@ public class ScraperService {
             //Ora processiamo le recensioni degli utenti
             // prima ci assicuriamo di essere arrivati a fondo pagina cliccando sul pulsante "show more"
 
-            while(driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size()!=0){
-                driver.findElementByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").sendKeys(Keys.ENTER);
+            log.info("Currently Processing Trail: " + link.getLink());
+            log.info(driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size() + "");
+            if(driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size()!=0) {
+                while (driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size() == 0) {
+                    driver.findElementByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").sendKeys(Keys.ENTER);
+                }
             }
 
             //costruisco un trail
@@ -344,16 +366,24 @@ public class ScraperService {
                     .ratingsSet(new HashSet<>())
                     .build();
 
+
             Thread.sleep(2000);
             List<WebElement> reviewCards = driver.findElementsByXPath("//div[@class='styles-module__content___u3Ojr styles-module__content___O4ebJ']");
             log.info(reviewCards.size() + "");
             log.info(reviewCards.toString());
-            List<User> userList = new LinkedList<>();
+            Set<User> userSet = new HashSet<>();
+            Set<Rating> ratingSet = new HashSet<>();
+            int i = 1;
             for(WebElement card: reviewCards){
-                String userName = driver.findElementByXPath("//div[@class='styles-module__nameTrailDetails___rTHi3']").getText();
-                String userLink = driver.findElementByXPath("//a[@class='clickable styles-module__link48___B_oJ1 xlate-none styles-module__inlineBlock___uyWzl']").getAttribute("href");
-                String userRatingString = driver.findElementByXPath("//span[@class='MuiRating-root default-module__rating___LhvGE MuiRating-sizeLarge MuiRating-readOnly']").getAttribute("aria-label");
-                Double userRating = Double.parseDouble(userRatingString.replaceAll("\\D+", ""));
+                String userName = driver.findElementByXPath("(//div[@class='styles-module__nameTrailDetails___rTHi3'])" + "[" + i + "]").getText();
+                String userLink = driver.findElementByXPath("(//a[@class='clickable styles-module__link48___B_oJ1 xlate-none styles-module__inlineBlock___uyWzl'])"  + "[" + i + "]").getAttribute("href");
+                String userRatingString = driver.findElementByXPath("(//span[@class='MuiRating-root default-module__rating___LhvGE MuiRating-sizeLarge MuiRating-readOnly'])"  + "[" + i + "]").getAttribute("aria-label");
+                Double userRating;
+                if(userRatingString.equals("NaN Stars")){
+                    userRating = 0.0;
+                }else {
+                    userRating = Double.parseDouble(userRatingString.replaceAll("[^0-9.]", ""));
+                }
                 log.info(userLink);
                 log.info(userName);
                 log.info(userRatingString);
@@ -384,10 +414,12 @@ public class ScraperService {
                     log.info(r.toString());
                 }
 
-                userList.add(u);
+                i = i +1;
+                ratingSet.add(r);
+                userSet.add(u);
             }
 
-            saveToDb(userList, t, link);
+            saveToDb(userSet, t, link, ratingSet);
             savedEntities = savedEntities + 1;
             log.info(savedEntities + " Saved Entities");
 
@@ -398,13 +430,19 @@ public class ScraperService {
     }
 
     @Transactional
-    public void saveToDb(List<User> userSet, Trail t, Link link) {
-        if(userSet!=null) {
-            userService.saveUserSet(userSet);
-        }
+    public void saveToDb(Set<User> userSet, Trail t, Link link, Set<Rating> ratingSet) {
         if(t!=null) {
             trailService.saveTrail(t);
         }
+        if(ratingSet!=null){
+            for(Rating rating: ratingSet){
+                userService.saveUser(rating.getUser());
+                ratingService.saveRating(rating);
+            }
+        }/*
+        if(userSet!=null) {
+            userService.saveUserSet(userSet);
+        }*/
         if(link!=null) {
             link.setStatus("DONE");
             linkService.saveEntity(link);
@@ -457,7 +495,7 @@ public class ScraperService {
             savedEntities = savedEntities + 1;
         }
 
-        log.info(savedEntities + "Links Found and Saved");
+        log.info(savedEntities + " Links Found and Saved");
 
     }
 

@@ -16,6 +16,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @ToString @Builder
 @Table(name = "ratings")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Rating {
 
     @Id
@@ -27,10 +28,12 @@ public class Rating {
 
     @ManyToOne
     @JoinColumn(name="trail_id", nullable=false)
+    @EqualsAndHashCode.Include
     private Trail trail;
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
+    @EqualsAndHashCode.Include
     private User user;
 
 }

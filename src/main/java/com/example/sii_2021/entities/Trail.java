@@ -9,20 +9,23 @@ import java.util.Set;
 
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id", scope = Trail.class)
+        property = "trail_id", scope = Trail.class)
 @Entity
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
 @ToString @Builder
 @Table(name = "trails")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Trail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "trail_id")
+    @EqualsAndHashCode.Include
     private Long id;
 
-    @OneToMany(mappedBy="trail")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy="trail")
+    @ToString.Exclude
     private Set<Rating> ratingsSet;
 
     //extract trail info

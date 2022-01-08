@@ -18,10 +18,11 @@ public class UserService {
         return userRepository.findByUserLink(userLink);
     }
 
-    public void saveUserSet(List<User> userSet){
-        for(User user: userSet) {
-            userRepository.save(user);
-        }
+    public void saveUserSet(Set<User> userSet){
+        userRepository.saveAll(userSet);
     }
 
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
 }
