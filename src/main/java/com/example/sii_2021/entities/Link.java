@@ -15,10 +15,12 @@ import javax.persistence.*;
 @NoArgsConstructor @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "links")
 public class Link {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "link_id")
     private Long id;
 
     @Column(unique = true)

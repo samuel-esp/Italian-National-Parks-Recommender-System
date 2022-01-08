@@ -31,7 +31,8 @@ public class ReconTool implements CommandLineRunner {
 
         driver = scraperService.userLogin(driver);
         driver = scraperService.extractLinks(driver);
-        driver = scraperService.extractEntities(driver);
+        driver = scraperService.extractEntitiesAndReviews(driver);
+        driver.quit();
     }
 
 }

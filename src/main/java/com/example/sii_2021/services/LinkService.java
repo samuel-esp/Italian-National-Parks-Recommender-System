@@ -24,11 +24,5 @@ public class LinkService {
          return linkRepository.save(link);
     }
 
-    @Transactional
-    public Set<Link> getLinksWithStatus(String string){
-        return linkRepository.findByStatus(string);
-    }
-
-
 
 }
