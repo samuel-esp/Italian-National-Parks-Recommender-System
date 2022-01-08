@@ -25,7 +25,7 @@ public class LinkService {
     }
 
     @Transactional
-    public Set<Link> getLinkWithStatus(String string){
+    public Set<Link> getLinksWithStatus(String string){
         return linkRepository.findByStatus(string);
     }
 

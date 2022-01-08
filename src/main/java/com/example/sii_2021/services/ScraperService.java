@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
@@ -17,8 +16,8 @@ public class ScraperService {
 
     @Autowired
     private LinkService linkService;
-
-    public ChromeDriver scrapeLinks() throws InterruptedException {
+/*
+    public ChromeDriver scrapeLinks(ChromeDriver driver) throws InterruptedException {
 
         System.out.println("prova");
 
@@ -38,19 +37,20 @@ public class ScraperService {
 
         return driver;
 
-    }
+    }*/
 
 
     //TODO
-    public void extractEntities(ChromeDriver driver){
+    public ChromeDriver extractEntities(ChromeDriver driver){
 
         //estraggo informazione da tutti i link presenti nel db  (2)
         driver.quit();
 
+        return driver;
 
     }
 
-    private void extractLinks(ChromeDriver driver) throws InterruptedException {
+    public ChromeDriver extractLinks(ChromeDriver driver) throws InterruptedException {
 
         List<String> seeds = initializeSeeds();
         Collections.shuffle(seeds);
@@ -59,15 +59,17 @@ public class ScraperService {
         Thread.sleep(4000);
         driver.get("https://www.alltrails.com/us/arizona");
 
-        List<WebElement> trailsWebElement = showAllEntities(driver);
-        createLinkEntities(trailsWebElement);
+        List<WebElement> trailsWebElement = showAllCards(driver);
+        saveLinks(trailsWebElement);
 
 
         log.info("completed");
 
+        return driver;
+
     }
 
-    private List<WebElement> showAllEntities(ChromeDriver driver) {
+    private List<WebElement> showAllCards(ChromeDriver driver) {
         int i = 0;
         while(driver.findElementsByXPath("//button[@title='Show more trails']").size()!=0 && i<1000){
             driver.findElementByXPath("//button[@title='Show more trails']").sendKeys(Keys.ENTER);
@@ -78,7 +80,7 @@ public class ScraperService {
         return trailsWebElement;
     }
 
-    private void createLinkEntities(List<WebElement> trailsWebElement) {
+    private void saveLinks(List<WebElement> trailsWebElement) {
 
         int savedEntities = 0;
 
