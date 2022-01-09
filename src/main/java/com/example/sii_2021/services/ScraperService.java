@@ -12,7 +12,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -40,6 +42,9 @@ public class ScraperService {
 
             //open a new trail in the browser
             driver.get(link.getLink());
+            Thread.sleep(3000);
+            //Captcha Detection
+            captchaSecurity(driver);
 
             //extract trail info
             String name = null;
@@ -47,67 +52,67 @@ public class ScraperService {
             Double elevationM = null;
 
             //extract route type
-            Integer loop = 0;
-            Integer outAndBack = 0;
-            Integer pointToPoint = 0;
+            int loop = 0;
+            int outAndBack = 0;
+            int pointToPoint = 0;
 
             //extract trail difficulties
-            Integer easy = 0;
-            Integer medium = 0;
-            Integer hard = 0;
+            int easy = 0;
+            int medium = 0;
+            int hard = 0;
 
             //extract activity tags
-            Integer backpacking = 0;
-            Integer bikeTouring = 0;
-            Integer birdWatching = 0;
-            Integer camping = 0;
-            Integer crossCountrySkiing = 0;
-            Integer fishing = 0;
-            Integer hiking = 0;
-            Integer horseBackRiding = 0;
-            Integer mountainBiking = 0;
-            Integer natureTrips = 0;
-            Integer ohvOffRoadDriving = 0;
-            Integer paddleSports = 0;
-            Integer roadBiking = 0;
-            Integer rockClimbing = 0;
-            Integer scenicDriving = 0;
-            Integer skiing = 0;
-            Integer snowshoeing = 0;
-            Integer running = 0;
-            Integer viaFerrata = 0;
-            Integer walking = 0;
+            int backpacking = 0;
+            int bikeTouring = 0;
+            int birdWatching = 0;
+            int camping = 0;
+            int crossCountrySkiing = 0;
+            int fishing = 0;
+            int hiking = 0;
+            int horseBackRiding = 0;
+            int mountainBiking = 0;
+            int natureTrips = 0;
+            int ohvOffRoadDriving = 0;
+            int paddleSports = 0;
+            int roadBiking = 0;
+            int rockClimbing = 0;
+            int scenicDriving = 0;
+            int skiing = 0;
+            int snowshoeing = 0;
+            int running = 0;
+            int viaFerrata = 0;
+            int walking = 0;
 
             //extract attraction tags
-            Integer beach = 0;
-            Integer cave = 0;
-            Integer cityWalk = 0;
-            Integer event = 0;
-            Integer forest = 0;
-            Integer historicSite = 0;
-            Integer hotSprings = 0;
-            Integer lake = 0;
-            Integer pubWalk = 0;
-            Integer railsTrails = 0;
-            Integer river = 0;
-            Integer views = 0;
-            Integer waterfalls = 0;
-            Integer wildflowers = 0;
-            Integer wildlife = 0;
+            int beach = 0;
+            int cave = 0;
+            int cityWalk = 0;
+            int event = 0;
+            int forest = 0;
+            int historicSite = 0;
+            int hotSprings = 0;
+            int lake = 0;
+            int pubWalk = 0;
+            int railsTrails = 0;
+            int river = 0;
+            int views = 0;
+            int waterfalls = 0;
+            int wildflowers = 0;
+            int wildlife = 0;
 
             //extract suitability tags
-            Integer dogFriendly = 0;
-            Integer paved = 0;
-            Integer kidFriendly = 0;
-            Integer partiallyPaved = 0;
-            Integer wheelchairFriendly = 0;
-            Integer strollerFriendly = 0;
+            int dogFriendly = 0;
+            int paved = 0;
+            int kidFriendly = 0;
+            int partiallyPaved = 0;
+            int wheelchairFriendly = 0;
+            int strollerFriendly = 0;
 
             //extract trail name
             try {
                 name = driver.findElementByXPath("//h1[@itemprop='name']").getText();
             } catch (org.openqa.selenium.NoSuchElementException e) {
-
+                log.info(e.toString());
             }
 
             //extract trail info + route type
@@ -140,7 +145,7 @@ public class ScraperService {
                     pointToPoint = 1;
                 }
             } catch (org.openqa.selenium.NoSuchElementException e) {
-
+                log.info(e.toString());
             }
 
             //extract trail difficulty
@@ -154,7 +159,7 @@ public class ScraperService {
                     easy = 1;
                 }
             } catch (org.openqa.selenium.NoSuchElementException e) {
-
+                log.info(e.toString());
             }
 
             //extract trail tags
@@ -297,7 +302,7 @@ public class ScraperService {
                     }
                 }
             } catch (org.openqa.selenium.NoSuchElementException e) {
-
+                log.info(e.toString());
             }
 
             //Ora processiamo le recensioni degli utenti
@@ -425,6 +430,7 @@ public class ScraperService {
 
         }
 
+        Thread.sleep(20000);
         return driver;
 
     }
@@ -502,7 +508,12 @@ public class ScraperService {
     public ChromeDriver userLogin(ChromeDriver driver) throws InterruptedException {
 
         driver.get("https://www.alltrails.com/login?ref=header");
-        Thread.sleep(15000);
+        Thread.sleep(3000);
+
+        //Captcha Detection
+        captchaSecurity(driver);
+
+        //Thread.sleep(15000);
         driver.findElementByXPath("//input[@name='userEmail']").sendKeys(CredentialsSingleton.getInstance().getEmail());
         Thread.sleep(2000);
         driver.findElementByXPath("//input[@name='userPassword']").sendKeys(CredentialsSingleton.getInstance().getPassword());
@@ -510,6 +521,24 @@ public class ScraperService {
         driver.findElementByXPath("//input[@value='Log in']").sendKeys(Keys.ENTER);
 
         return driver;
+    }
+
+    private void captchaSecurity(ChromeDriver driver) throws InterruptedException {
+
+        WebElement frame = driver.findElementByXPath("//iframe");
+        driver.switchTo().frame(frame);
+        List<WebElement> captchaFrame = driver.findElementsByXPath("//div[@id='captcha-container']");
+        log.info(captchaFrame.size() + "");
+        if(driver.findElementsByXPath("//div[@id='captcha-container']").size()!=0){
+            while(driver.findElementsByXPath("//div[@id='captcha-container']").size()!=0){
+                log.info("Captcha Has Been Detected Action Required");
+                Thread.sleep(25000);
+                Toolkit.getDefaultToolkit().beep();
+            }
+            log.info("Captcha Completed. Resuming");
+        }
+        driver.switchTo().defaultContent();
+
     }
 
     public List<String> initializeSeeds(){

@@ -24,6 +24,7 @@ public class ReconTool implements CommandLineRunner {
         options.addArguments("--disable-blink-features=AutomationControlled");
         options.setExperimentalOption("useAutomationExtension", false);
         options.addArguments("general.useragent.override", userAgent);
+        log.info("Chrome Driver Options Init");
 
         ChromeDriver driver = new ChromeDriver(options);
         driver.executeScript("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
