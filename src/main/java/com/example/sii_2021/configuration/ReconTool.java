@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 @Component
 @Slf4j
 public class ReconTool implements CommandLineRunner {
@@ -30,10 +33,35 @@ public class ReconTool implements CommandLineRunner {
         driver.executeScript("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
         log.info(driver.executeScript("return navigator.userAgent;").toString());
 
-        driver = scraperService.userLogin(driver);
-        driver = scraperService.extractLinks(driver);
-        driver = scraperService.extractEntitiesAndReviews(driver);
-        driver.quit();
+        System.out.println("\nTYPE 1 TO SCRAPE SCRAPE NEW LINKS ...\n");
+        System.out.println("TYPE 2 TO EXTRACT ENTITIES ...\n");
+        System.out.println("TYPE 3 TO DO BOTH ...\n");
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String str = br.readLine();
+
+        if (Integer.parseInt(str) == 1) {
+
+            driver = scraperService.userLogin(driver);
+            driver = scraperService.extractLinks(driver);
+            driver.quit();
+
+
+        } else if (Integer.parseInt(str) == 2) {
+
+            driver = scraperService.userLogin(driver);
+            driver = scraperService.extractEntitiesAndReviews(driver);
+            driver.quit();
+
+        }else {
+
+            driver = scraperService.userLogin(driver);
+            driver = scraperService.extractLinks(driver);
+            driver = scraperService.extractEntitiesAndReviews(driver);
+            driver.quit();
+
+        }
+
     }
 
 }

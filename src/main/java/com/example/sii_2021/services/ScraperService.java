@@ -42,7 +42,7 @@ public class ScraperService {
 
             //open a new trail in the browser
             driver.get(link.getLink());
-            Thread.sleep(3000);
+            Thread.sleep(5000);
             //Captcha Detection
             captchaSecurity(driver);
 
@@ -150,12 +150,13 @@ public class ScraperService {
 
             //extract trail difficulty
             try {
-                String difficulty = driver.findElementByXPath("//div[@class='xlate-none styles-module__card___nwoZI styles-module__clickable___VTekh']//span[@class='styles-module__diff___uab6o styles-module__moderate____rxpe styles-module__selected___KQT0h']").getText();
+                String difficulty = driver.findElementByXPath("(//div[@class='styles-module__content___RunLT']//span)[1]").getText();
+                log.info(driver.findElementByXPath("(//div[@class='styles-module__content___RunLT']//span)[1]").getText());
                 if(difficulty.equals("moderate")){
                     medium = 1;
                 }if(difficulty.equals("hard")){
                     hard = 1;
-                }else{
+                }else if(difficulty.equals("easy")){
                     easy = 1;
                 }
             } catch (org.openqa.selenium.NoSuchElementException e) {
@@ -309,7 +310,7 @@ public class ScraperService {
             // prima ci assicuriamo di essere arrivati a fondo pagina cliccando sul pulsante "show more"
 
             log.info("Currently Processing Trail: " + link.getLink());
-            log.info(driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size() + "");
+            log.info(driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size() + " \"Show More Reviews\" Buttons Found");
             if(driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size()!=0) {
                 while (driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size() == 0) {
                     driver.findElementByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").sendKeys(Keys.ENTER);
@@ -430,7 +431,6 @@ public class ScraperService {
 
         }
 
-        Thread.sleep(20000);
         return driver;
 
     }
@@ -440,15 +440,12 @@ public class ScraperService {
         if(t!=null) {
             trailService.saveTrail(t);
         }
-        if(ratingSet!=null){
-            for(Rating rating: ratingSet){
+        if(ratingSet!=null) {
+            for (Rating rating : ratingSet) {
                 userService.saveUser(rating.getUser());
                 ratingService.saveRating(rating);
             }
-        }/*
-        if(userSet!=null) {
-            userService.saveUserSet(userSet);
-        }*/
+        }
         if(link!=null) {
             link.setStatus("DONE");
             linkService.saveEntity(link);
@@ -528,7 +525,6 @@ public class ScraperService {
         WebElement frame = driver.findElementByXPath("//iframe");
         driver.switchTo().frame(frame);
         List<WebElement> captchaFrame = driver.findElementsByXPath("//div[@id='captcha-container']");
-        log.info(captchaFrame.size() + "");
         if(driver.findElementsByXPath("//div[@id='captcha-container']").size()!=0){
             while(driver.findElementsByXPath("//div[@id='captcha-container']").size()!=0){
                 log.info("Captcha Has Been Detected Action Required");
