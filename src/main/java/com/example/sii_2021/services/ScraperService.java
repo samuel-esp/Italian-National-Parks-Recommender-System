@@ -143,7 +143,7 @@ public class ScraperService {
                         loop = 1;
                     }
                 }catch (IndexOutOfBoundsException e){
-                    pointToPoint = 1;
+                    log.info(e.toString());
                 }
             } catch (org.openqa.selenium.NoSuchElementException e) {
                 log.info(e.toString());
@@ -529,7 +529,7 @@ public class ScraperService {
             List<WebElement> captchaFrame = driver.findElementsByXPath("//div[@id='captcha-container']");
             if (driver.findElementsByXPath("//div[@id='captcha-container']").size() != 0) {
                 while (driver.findElementsByXPath("//div[@id='captcha-container']").size() != 0) {
-                    log.info("Captcha Has Been Detected Action Required");
+                    log.warn("Captcha Has Been Detected Action Required");
                     Thread.sleep(25000);
                     Toolkit.getDefaultToolkit().beep();
                 }
