@@ -7,6 +7,7 @@ import com.example.sii_2021.entities.Trail;
 import com.example.sii_2021.entities.User;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -522,18 +523,22 @@ public class ScraperService {
 
     private void captchaSecurity(ChromeDriver driver) throws InterruptedException {
 
-        WebElement frame = driver.findElementByXPath("//iframe");
-        driver.switchTo().frame(frame);
-        List<WebElement> captchaFrame = driver.findElementsByXPath("//div[@id='captcha-container']");
-        if(driver.findElementsByXPath("//div[@id='captcha-container']").size()!=0){
-            while(driver.findElementsByXPath("//div[@id='captcha-container']").size()!=0){
-                log.info("Captcha Has Been Detected Action Required");
-                Thread.sleep(25000);
-                Toolkit.getDefaultToolkit().beep();
+        try {
+            WebElement frame = driver.findElementByXPath("//iframe");
+            driver.switchTo().frame(frame);
+            List<WebElement> captchaFrame = driver.findElementsByXPath("//div[@id='captcha-container']");
+            if (driver.findElementsByXPath("//div[@id='captcha-container']").size() != 0) {
+                while (driver.findElementsByXPath("//div[@id='captcha-container']").size() != 0) {
+                    log.info("Captcha Has Been Detected Action Required");
+                    Thread.sleep(25000);
+                    Toolkit.getDefaultToolkit().beep();
+                }
+                log.info("Captcha Completed. Resuming");
             }
-            log.info("Captcha Completed. Resuming");
+            driver.switchTo().defaultContent();
+        }catch (NoSuchElementException e){
+            log.info("IFrame Not Found...Skipping");
         }
-        driver.switchTo().defaultContent();
 
     }
 
