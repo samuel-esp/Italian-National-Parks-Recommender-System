@@ -406,9 +406,9 @@ public class ScraperService {
                 }else {
                     userRating = Double.parseDouble(userRatingString.replaceAll("[^0-9.]", ""));
                 }
-                log.info(userLink);
-                log.info(userName);
-                log.info(userRatingString);
+                //log.info(userLink);
+                //log.info(userName);
+                //log.info(userRatingString);
                 User u;
                 Rating r;
                 if(userService.getByUserLink(userLink)==null){
