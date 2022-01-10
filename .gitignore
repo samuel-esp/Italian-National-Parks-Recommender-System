@@ -33,3 +33,4 @@ build/
 .vscode/
 /src/main/java/com/example/sii_2021/configuration/CredentialsSingleton.java
 /src/main/resources/ChromeDriver/
+/DatasetLazio/.ipynb_checkpoints/

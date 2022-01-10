@@ -414,13 +414,13 @@ public class ScraperService {
 
                     u = new User(userName, userLink, new HashSet<Rating>());
 
-                    log.info(u.toString());
+                    //log.info(u.toString());
                     r = Rating.builder()
                             .user(u)
                             .userRating(userRating)
                             .trail(t)
                             .build();
-                    log.info(r.toString());
+                    //log.info(r.toString());
 
 
                 }else {
@@ -431,8 +431,8 @@ public class ScraperService {
                             .userRating(userRating)
                             .trail(t)
                             .build();
-                    log.info(u.toString());
-                    log.info(r.toString());
+                    //log.info(u.toString());
+                    //log.info(r.toString());
                 }
 
                 i = i +1;
