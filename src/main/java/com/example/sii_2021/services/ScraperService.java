@@ -324,6 +324,7 @@ public class ScraperService {
                 int count = 0;
                 while (driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size() != 0) {
                     driver.findElementByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").sendKeys(Keys.ENTER);
+                    driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
                     count = count + 1;
                     if(count%50==0) {
                         log.info("Show More Button Pressed " + count + " Times");
