@@ -28,6 +28,9 @@ public class Trail {
     @ToString.Exclude
     private Set<Rating> ratingsSet;
 
+    @ToString.Exclude
+    private String imageLink;
+
     //extract trail info
     private String name;
     private Double lengthKm;

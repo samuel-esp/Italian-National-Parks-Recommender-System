@@ -49,6 +49,7 @@ public class ScraperService {
 
             //extract trail info
             String name = null;
+            String imageLink = null;
             Double lengthKm = null;
             Double elevationM = null;
 
@@ -112,6 +113,13 @@ public class ScraperService {
             //extract trail name
             try {
                 name = driver.findElementByXPath("//h1[@itemprop='name']").getText();
+            } catch (org.openqa.selenium.NoSuchElementException e) {
+                log.info(e.toString());
+            }
+
+            //extract trail image (link only)
+            try {
+                imageLink = driver.findElementByXPath("//img[@class='styles-module__backgroundImage___YHd5a']").getAttribute("src");
             } catch (org.openqa.selenium.NoSuchElementException e) {
                 log.info(e.toString());
             }
@@ -313,14 +321,20 @@ public class ScraperService {
             log.info("Currently Processing Trail: " + link.getLink());
             log.info(driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size() + " \"Show More Reviews\" Buttons Found");
             if(driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size()!=0) {
-                while (driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size() == 0) {
+                int count = 0;
+                while (driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size() != 0) {
                     driver.findElementByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").sendKeys(Keys.ENTER);
+                    count = count + 1;
+                    if(count%50==0) {
+                        log.info("Show More Button Pressed " + count + " Times");
+                    }
                 }
             }
 
             //costruisco un trail
             Trail t = Trail.builder()
                     .name(name)
+                    .imageLink(imageLink)
                     .lengthKm(lengthKm)
                     .elevationM(elevationM)
                     .loop(loop)
@@ -460,11 +474,11 @@ public class ScraperService {
         Collections.shuffle(seeds);
 
         Thread.sleep(4000);
-        driver.get("https://www.alltrails.com/italy/lazio");
-
-        List<WebElement> trailsWebElement = showAllCards(driver);
-        saveLinks(trailsWebElement);
-
+        for(String link: seeds){
+            driver.get(link);
+            List<WebElement> trailsWebElement = showAllCards(driver);
+            saveLinks(trailsWebElement);
+        }
 
         log.info("Extraction Completed");
 
