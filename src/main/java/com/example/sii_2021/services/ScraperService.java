@@ -160,7 +160,7 @@ public class ScraperService {
             //extract trail difficulty
             try {
                 String difficulty = driver.findElementByXPath("(//div[@class='styles-module__content___RunLT']//span)[1]").getText();
-                log.info(driver.findElementByXPath("(//div[@class='styles-module__content___RunLT']//span)[1]").getText());
+                //log.info(driver.findElementByXPath("(//div[@class='styles-module__content___RunLT']//span)[1]").getText());
                 if(difficulty.equals("moderate")){
                     medium = 1;
                 }if(difficulty.equals("hard")){
@@ -392,7 +392,7 @@ public class ScraperService {
             Thread.sleep(2000);
             List<WebElement> reviewCards = driver.findElementsByXPath("//div[@class='styles-module__content___u3Ojr styles-module__content___O4ebJ']");
             log.info(reviewCards.size() + "");
-            log.info(reviewCards.toString());
+            //log.info(reviewCards.toString());
             Set<User> userSet = new HashSet<>();
             Set<Rating> ratingSet = new HashSet<>();
             int i = 1;
@@ -453,19 +453,30 @@ public class ScraperService {
 
     @Transactional
     public void saveToDb(Set<User> userSet, Trail t, Link link, Set<Rating> ratingSet) {
+
+        log.info("Saving Trail, Ratings and Users To Database");
+
         if(t!=null) {
             trailService.saveTrail(t);
         }
+        if(userSet!=null){
+            userService.saveUserSet(userSet);
+        }
+        if(ratingSet!=null){
+            ratingService.saveRatings(ratingSet);
+        }/*
         if(ratingSet!=null) {
             for (Rating rating : ratingSet) {
                 userService.saveUser(rating.getUser());
                 ratingService.saveRating(rating);
             }
-        }
+        }*/
         if(link!=null) {
             link.setStatus("DONE");
             linkService.saveEntity(link);
         }
+
+        log.info("Database Transaction Completed");
     }
 
     @Transactional
