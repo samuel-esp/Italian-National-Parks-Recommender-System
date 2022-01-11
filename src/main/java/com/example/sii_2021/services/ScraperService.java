@@ -330,6 +330,7 @@ public class ScraperService {
                 int count = 0;
                 while (driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size() != 0) {
                     try {
+                        captchaSecurity(driver);
                         driver.findElementByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").sendKeys(Keys.ENTER);
                         driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
                     }catch (NoSuchElementException e){
@@ -585,8 +586,7 @@ public class ScraperService {
     public List<String> initializeSeeds(){
 
         List<String> allTrailsSeeds = new LinkedList<>();
-        allTrailsSeeds.add("https://www.alltrails.com/italy/lazio");
-        //allTrailsSeeds.add("https://www.alltrails.com/us/arizona");
+        allTrailsSeeds.add("https://www.alltrails.com/us/arizona");
 
         return allTrailsSeeds;
 
