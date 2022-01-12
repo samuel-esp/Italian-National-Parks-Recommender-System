@@ -29,6 +29,7 @@ public class Trail {
     private Set<Rating> ratingsSet;
 
     @ToString.Exclude
+    @Column(columnDefinition = "text")
     private String imageLink;
 
     //extract trail info

@@ -6,12 +6,18 @@ import com.example.sii_2021.entities.Rating;
 import com.example.sii_2021.entities.Trail;
 import com.example.sii_2021.entities.User;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.awt.*;
 import java.util.*;
@@ -323,8 +329,15 @@ public class ScraperService {
             if(driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size()!=0) {
                 int count = 0;
                 while (driver.findElementsByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").size() != 0) {
-                    driver.findElementByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").sendKeys(Keys.ENTER);
-                    driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+                    try {
+                        captchaSecurity(driver);
+                        driver.findElementByXPath("//div[@class='styles-module__container___SMbPv xlate-none']//button[@title='Show more reviews']").sendKeys(Keys.ENTER);
+                        driver.executeScript("window.scrollTo(0, document.body.scrollHeight);");
+                    }catch (NoSuchElementException e){
+                        log.info("Show More Button Not Found");
+                    }catch (StaleElementReferenceException s){
+                        log.info("Stale Element Exception Caught");
+                    }
                     count = count + 1;
                     if(count%50==0) {
                         log.info("Show More Button Pressed " + count + " Times");
@@ -390,16 +403,18 @@ public class ScraperService {
 
 
             Thread.sleep(2000);
-            List<WebElement> reviewCards = driver.findElementsByXPath("//div[@class='styles-module__content___u3Ojr styles-module__content___O4ebJ']");
-            log.info(reviewCards.size() + "");
+            //List<WebElement> reviewCards = driver.findElementsByXPath("//div[@class='styles-module__content___u3Ojr styles-module__content___O4ebJ']");
+            Document doc = Jsoup.parse(driver.getPageSource());
+            Elements reviewCards = doc.select("div[class=styles-module__content___u3Ojr styles-module__content___O4ebJ]");
+            log.info(reviewCards.size() + " Reviews Found");
             //log.info(reviewCards.toString());
             Set<User> userSet = new HashSet<>();
             Set<Rating> ratingSet = new HashSet<>();
             int i = 1;
-            for(WebElement card: reviewCards){
-                String userName = driver.findElementByXPath("(//div[@class='styles-module__nameTrailDetails___rTHi3'])" + "[" + i + "]").getText();
-                String userLink = driver.findElementByXPath("(//a[@class='clickable styles-module__link48___B_oJ1 xlate-none styles-module__inlineBlock___uyWzl'])"  + "[" + i + "]").getAttribute("href");
-                String userRatingString = driver.findElementByXPath("(//span[@class='MuiRating-root default-module__rating___LhvGE MuiRating-sizeLarge MuiRating-readOnly'])"  + "[" + i + "]").getAttribute("aria-label");
+            for(Element card: reviewCards){
+                String userName = card.select("div[class=styles-module__nameTrailDetails___rTHi3]").text();
+                String userLink = card.select("a[class=clickable styles-module__link48___B_oJ1 xlate-none styles-module__inlineBlock___uyWzl]").attr("href");
+                String userRatingString = card.select("span[class=MuiRating-root default-module__rating___LhvGE MuiRating-sizeLarge MuiRating-readOnly]").attr("aria-label");
                 Double userRating;
                 if(userRatingString.equals("NaN Stars")){
                     userRating = 0.0;

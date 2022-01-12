@@ -24,6 +24,7 @@ public class ReconTool implements CommandLineRunner {
         ChromeOptions options = new ChromeOptions();
         String userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.517 Safari/537.36";
         options.addArguments("window-size=1000,1200");
+        options.addArguments("--no-sandbox");
         options.addArguments("--disable-blink-features=AutomationControlled");
         options.setExperimentalOption("useAutomationExtension", false);
         options.addArguments("general.useragent.override", userAgent);
