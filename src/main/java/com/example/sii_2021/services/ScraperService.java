@@ -5,6 +5,7 @@ import com.example.sii_2021.entities.Link;
 import com.example.sii_2021.entities.Rating;
 import com.example.sii_2021.entities.Trail;
 import com.example.sii_2021.entities.User;
+import com.example.sii_2021.repositories.projections.UserLinkOnlyDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -410,7 +411,11 @@ public class ScraperService {
             //log.info(reviewCards.toString());
             Set<User> userSet = new HashSet<>();
             Set<Rating> ratingSet = new HashSet<>();
-            int i = 1;
+
+            Set<UserLinkOnlyDTO> storedUsersLink = userService.getAllUsersLinkSet();
+            log.info("Processing Review Cards");
+            int i = 0;
+            int j = 0;
             for(Element card: reviewCards){
                 String userName = card.select("div[class=styles-module__nameTrailDetails___rTHi3]").text();
                 String userLink = card.select("a[class=clickable styles-module__link48___B_oJ1 xlate-none styles-module__inlineBlock___uyWzl]").attr("href");
@@ -426,9 +431,16 @@ public class ScraperService {
                 //log.info(userRatingString);
                 User u;
                 Rating r;
-                if(userService.getByUserLink(userLink)==null){
+
+                UserLinkOnlyDTO userLinkOnly = new UserLinkOnlyDTO(userLink);
+
+                if(!storedUsersLink.contains(userLinkOnly)){
 
                     u = new User(userName, userLink, new HashSet<Rating>());
+                    j = j+1;
+                    if(j%10==0){
+                        log.info(j + " Unique Users Found");
+                    }
 
                     //log.info(u.toString());
                     r = Rating.builder()
@@ -441,6 +453,10 @@ public class ScraperService {
 
                 }else {
 
+                    i = i+1;
+                    if(i%10==0){
+                        log.info(i + " Duplicates Found");
+                    }
                     u = userService.getByUserLink(userLink);
                     r = Rating.builder()
                             .user(u)
@@ -451,7 +467,6 @@ public class ScraperService {
                     //log.info(r.toString());
                 }
 
-                i = i +1;
                 ratingSet.add(r);
                 userSet.add(u);
             }
