@@ -11,10 +11,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.Keys;
+import org.openqa.selenium.*;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -338,6 +336,8 @@ public class ScraperService {
                         log.info("Show More Button Not Found");
                     }catch (StaleElementReferenceException s){
                         log.info("Stale Element Exception Caught");
+                    }catch (ElementNotInteractableException t){
+                        log.info("Element Not Interactable");
                     }
                     count = count + 1;
                     if(count%50==0) {
@@ -518,6 +518,7 @@ public class ScraperService {
         Thread.sleep(4000);
         for(String link: seeds){
             driver.get(link);
+            captchaSecurity(driver);
             List<WebElement> trailsWebElement = showAllCards(driver);
             saveLinks(trailsWebElement);
         }
@@ -528,10 +529,11 @@ public class ScraperService {
 
     }
 
-    private List<WebElement> showAllCards(ChromeDriver driver) {
+    private List<WebElement> showAllCards(ChromeDriver driver) throws InterruptedException {
         int i = 0;
         while(driver.findElementsByXPath("//button[@title='Show more trails']").size()!=0 && i<1000){
             driver.findElementByXPath("//button[@title='Show more trails']").sendKeys(Keys.ENTER);
+            captchaSecurity(driver);
             i = i + 10;
         }
         List<WebElement> trailsWebElement = driver.findElementsByXPath("//a[@itemprop='url']");
@@ -594,6 +596,8 @@ public class ScraperService {
             driver.switchTo().defaultContent();
         }catch (NoSuchElementException e){
             log.info("IFrame Not Found...Skipping");
+        }catch (NoSuchFrameException f){
+            log.info("IFrame Not Found...Skipping");
         }
 
     }
@@ -601,7 +605,12 @@ public class ScraperService {
     public List<String> initializeSeeds(){
 
         List<String> allTrailsSeeds = new LinkedList<>();
-        allTrailsSeeds.add("https://www.alltrails.com/us/arizona");
+        //allTrailsSeeds.add("https://www.alltrails.com/italy/liguria--3");
+        //allTrailsSeeds.add("https://www.alltrails.com/italy/lazio");
+        //allTrailsSeeds.add("https://www.alltrails.com/italy/campania");
+        //allTrailsSeeds.add("https://www.alltrails.com/italy/sardinia");
+        //allTrailsSeeds.add("https://www.alltrails.com/italy/veneto");
+        allTrailsSeeds.add("https://www.alltrails.com/italy/lombardy--3");
 
         return allTrailsSeeds;
 

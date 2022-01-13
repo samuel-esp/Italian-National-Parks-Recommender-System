@@ -39,8 +39,8 @@ public class ReconTool implements CommandLineRunner {
         options.addArguments("user-agent=Mozilla/5.0 (iPad; CPU OS 15_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.2 Mobile/15E148 Safari/604.1");
         log.info("Chrome Driver Options Init");
 
-        //ChromeDriver driver = new ChromeDriver(options);
-        ChromeDriver driver = new ChromeDriver();
+        ChromeDriver driver = new ChromeDriver(options);
+        //ChromeDriver driver = new ChromeDriver();
         driver.executeScript("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
         driver = changeViewport(driver);
         log.info(driver.executeScript("return navigator.userAgent;").toString());
