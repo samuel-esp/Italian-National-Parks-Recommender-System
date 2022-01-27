@@ -4,7 +4,8 @@
     <img src="https://www.unospitearoma.it/wp-content/uploads/2019/01/47-1.jpg">
 </p>
 
-This project is a recommendation system for Italian national parks built with Java (Spring Boot, Selenium, Jsoup) and Python (Turicreate). The available recommendation systems are:
+This project is a recommendation system for Italian National Parks and Historical Sites built with Java (Spring Boot, Selenium, Jsoup) and Python (Turicreate) for the Intelligent Systems course at Roma Tre University. The available recommendation systems are:
+
 
 * User Based Collaborative Filtering
 * Item Based Collaborative Filtering
