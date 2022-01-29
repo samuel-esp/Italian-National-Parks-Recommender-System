@@ -1,12 +1,17 @@
 # :movie_camera: Italian National Parks Recommender System
 
-This project is a recommendation system for Italian national parks built with Java (Spring Boot, Selenium, Jsoup) and Python (Turicreate). The available recommendation systems are:
+<p align="center">
+    <img src="https://www.unospitearoma.it/wp-content/uploads/2019/01/47-1.jpg">
+</p>
 
-User Based Collaborative Filtering
-Item Based Collaborative Filtering
-Content Based Recommender
-Popular Based Recommender
-Matrix Factorization Recommender
+This project is a recommendation system for Italian National Parks and Historical Sites built with Java (Spring Boot, Selenium, Jsoup) and Python (Turicreate) for the Intelligent Systems course at Roma Tre University. The available recommendation systems are:
+
+
+* User Based Collaborative Filtering
+* Item Based Collaborative Filtering
+* Content Based Recommender
+* Popular Based Recommender
+* Matrix Factorization Recommender
 
 The regions currently supported are Campania, Lazio, Sardinia, Liguria, Veneto and Lombardy
 
