@@ -33,4 +33,4 @@ build/
 .vscode/
 /src/main/java/com/example/sii_2021/configuration/CredentialsSingleton.java
 /src/main/resources/ChromeDriver/
-/Recommender/.ipynb_checkpoints/
+/recommender/.ipynb_checkpoints/
