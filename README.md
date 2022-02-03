@@ -17,4 +17,4 @@ The regions currently supported are Campania, Lazio, Sardinia, Liguria, Veneto a
 
 # :gear: Technologies Used
 * Spring Boot, Selenium, Jsoup, Turicreate
-© Samuel Esposito, Simone Chilosi, AI Lab Roma Tre
+* © Samuel Esposito, Simone Chilosi, AI Lab Roma Tre
